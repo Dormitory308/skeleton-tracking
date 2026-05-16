@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实时摄像头骨架跟踪</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .video-container {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+    video {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .info-panel {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      color: #fff;
+      min-width: 280px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    .info-panel h2 {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 10px;
+    }
+    .landmark-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+    }
+    .landmark-name {
+      color: #aaa;
+    }
+    .landmark-value {
+      color: #00ff88;
+      font-family: monospace;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00ff88;
+      animation: pulse 2s infinite;
+    }
+    .status-text {
+      color: #00ff88;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-start {
+      background: linear-gradient(135deg, #00ff88, #00cc6a);
+      color: #1a1a2e;
+    }
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+    }
+    .btn-stop {
+      background: linear-gradient(135deg, #ff4757, #ff3344);
+      color: #fff;
+    }
+    .btn-stop:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+    }
+    .btn-capture {
+      background: linear-gradient(135deg, #3742fa, #2f3542);
+      color: #fff;
+    }
+    .btn-capture:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(55, 66, 250, 0.4);
+    }
+    .tip {
+      margin-top: 20px;
+      color: #888;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 实时摄像头骨架跟踪</h1>
+  
+  <div class="container">
+    <div class="video-container">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+    </div>
+    
+    <div class="info-panel">
+      <div class="status">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">等待启动...</span>
+      </div>
+      
+      <h2>关键点位置</h2>
+      <div id="landmarkInfo"></div>
+      
+      <div class="controls">
+        <button class="btn-start" id="startBtn">开始跟踪</button>
+        <button class="btn-stop" id="stopBtn" disabled>停止跟踪</button>
+        <button class="btn-capture" id="captureBtn" disabled>截图</button>
+      </div>
+    </div>
+  </div>
+  
+  <p class="tip">确保已允许摄像头访问权限 | 使用MediaPipe Pose进行实时人体姿态估计</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

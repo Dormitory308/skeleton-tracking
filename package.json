@@ -1,0 +1,13 @@
+{
+  "name": "mediapipe-skeleton-tracking",
+  "version": "1.0.0",
+  "description": "Real-time webcam skeleton tracking using MediaPipe",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -c-1",
+    "dev": "npx http-server -c-1 -p 8080"
+  },
+  "keywords": ["mediapipe", "skeleton", "tracking", "computer-vision"],
+  "author": "",
+  "license": "MIT"
+}
